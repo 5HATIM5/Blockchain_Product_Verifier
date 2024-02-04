@@ -35,8 +35,13 @@ class Blockchain:
     def __init__(self):
         self.chain = list()
         initial_block = self._create_block(
-            data="genesis block", proof=1, previous_hash="0", index=1
+            data="genesis block",
+            proof=1,
+            previous_hash="0",
+            index=1,
         )
+        block_hash = _hl.sha256(str(initial_block).encode()).hexdigest()
+        initial_block["block_hash"] = block_hash
         self.chain.append(initial_block)
 
     def mine_block(self, data: str) -> dict:
@@ -44,12 +49,16 @@ class Blockchain:
         previous_proof = previous_block["proof"]
         index = len(self.chain) + 1
         proof = self._proof_of_work(
-            previous_proof=previous_proof, index=index, data=data
+            previous_proof=previous_proof,
+            index=index,
+            data=data,
         )
         previous_hash = self._hash(block=previous_block)
         block = self._create_block(
             data=data, proof=proof, previous_hash=previous_hash, index=index
         )
+        block_hash = _hl.sha256(str(block).encode()).hexdigest()
+        block["block_hash"] = block_hash
         self.chain.append(block)
         return block
 
